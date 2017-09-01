@@ -1,0 +1,25 @@
+{
+  "name": "hexagonwar",
+  "version": "1.0.0",
+  "description": "server part of hexagon war",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.15.4",
+    "fs": "0.0.1-security",
+    "log": "^1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matth00/HexagonWar.git"
+  },
+  "author": "Ludovic Gindre & Matthieu Constant",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matth00/HexagonWar/issues"
+  },
+  "homepage": "https://github.com/matth00/HexagonWar#readme"
+}
