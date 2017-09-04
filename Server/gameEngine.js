@@ -80,6 +80,7 @@ function Battlefield(width, heigth) {
     const DEFAULTCELLCOST = 3;
     let players = [];
     let battlefield = [];
+    init();
 
     function init() {
         let i = 0;
@@ -138,4 +139,4 @@ function Battlefield(width, heigth) {
     }
 }
 
-exports.Battlefield = Battlefield;
+exports.Battlefield = (width, heigth) => Battlefield(width, heigth);
