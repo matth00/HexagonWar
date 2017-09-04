@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hexagon War</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <link rel="icon" href="files/style/logo.png">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="scripts/game.point.js"></script>
+    <script type="text/javascript" src="scripts/game.hexagon.js"></script>
+    <script type="text/javascript" src="scripts/game.display.js"></script>
+    <script type="text/javascript" src="scripts/game.map.js"></script>
+    <script type="text/javascript" src="scripts/game.input.js"></script>
+    <script type="text/javascript" src="scripts/game.js"></script>
+
+  </head>
+  <body>
+    <!-- Canvas -->
+    <canvas id="display" width="100" height="100">Erreur. Le canvas n'est pas supporté.</canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost:80');
+    </script>
+  </body>
+</html>
