@@ -17,8 +17,10 @@ function Display() {
   let x_translate = 0;
   let y_translate = 0;
   let camera_speed = 4;
-  let boost = false;
-  let boost_coeff = 4;
+  let boost = false; // Boost enabled
+  let boost_coeff = 4; // Boost speed = camera_speed*boost_coeff
+
+  // Playground settins
 
   //Border settings
   let border_width = 6;
@@ -26,6 +28,12 @@ function Display() {
 
   // Background settings
   let background_color = "#d8d6d6";
+
+  let hexagon_border_size = 2;
+  let hexagon_border_color = "#34373d";
+  let hexagon_text_color = "#34373d";
+
+  let hexagon = undefined;
 
   /**
   * Clear the whole canvas
@@ -85,39 +93,43 @@ function Display() {
       height = pHeight;
       border_width = pBorderWidth;
     },
-
     resize: function() {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
     },
+    setHexagon: function(pHexagon) {
+      hexagon = pHexagon;
+    },
     /**
     * Draw a hexagon in the chanvas
     */
-    drawHexagon: function(pHexagonCenter, pHexagon, pColor, pFill) {
-      let color = pColor;
-      let fill = pFill;
-
-      let centerX = pHexagonCenter.getX();
-      let centerY = pHexagonCenter.getY();
+    drawHexagon: function(pHexagon) {
 
       context.beginPath();
-      context.moveTo(centerX+pHexagon.getCorner(0).getX() , centerY+pHexagon.getCorner(0).getY()); // First corner
-      context.lineTo(centerX+pHexagon.getCorner(1).getX() , centerY+pHexagon.getCorner(1).getY()); // Second corner
-      context.lineTo(centerX+pHexagon.getCorner(2).getX() , centerY+pHexagon.getCorner(2).getY()); // Third corner
-      context.lineTo(centerX+pHexagon.getCorner(3).getX() , centerY+pHexagon.getCorner(3).getY()); // Fourth corner
-      context.lineTo(centerX+pHexagon.getCorner(4).getX() , centerY+pHexagon.getCorner(4).getY()); // Fifth corner
-      context.lineTo(centerX+pHexagon.getCorner(5).getX() , centerY+pHexagon.getCorner(5).getY());
+      context.moveTo(pHexagon.getCorner(0).getX(), pHexagon.getCorner(0).getY()); // First corner
+      context.lineTo(pHexagon.getCorner(1).getX(), pHexagon.getCorner(1).getY()); // Second corner
+      context.lineTo(pHexagon.getCorner(2).getX(), pHexagon.getCorner(2).getY()); // Third corner
+      context.lineTo(pHexagon.getCorner(3).getX(), pHexagon.getCorner(3).getY()); // Fourth corner
+      context.lineTo(pHexagon.getCorner(4).getX(), pHexagon.getCorner(4).getY()); // Fifth corner
+      context.lineTo(pHexagon.getCorner(5).getX(), pHexagon.getCorner(5).getY());
       context.closePath();
 
-      context.lineWidth = 2;
-
       //Background
-      context.fillStyle = color;
+      context.fillStyle = pHexagon.getColor();
       context.fill();
 
       // Border
-      context.strokeStyle = "#34373d";
+      context.lineWidth = hexagon_border_size;
+      context.strokeStyle = hexagon_border_color;
       context.stroke();
+
+      // Text
+      if (pHexagon.getText() !== undefined) {
+        context.font = "20px Arial";
+        context.fillStyle = hexagon_text_color;
+        context.textAlign = "center";
+        context.fillText(pHexagon.getText(), pHexagon.getCenter().getX(), pHexagon.getCenter().getY()+8);
+      }
 
     },
     moveCameraUp: function() {
@@ -146,6 +158,15 @@ function Display() {
     },
     speedUp: function() {
       boost = true;
+    },
+    getPlaygroundMousePosition: function(pMousePosition) {
+      return Point(pMousePosition.getX()-x_translate, pMousePosition.getY()-y_translate);
+    },
+    getScreenWidth: function() {
+      return canvas.width;
+    },
+    getScreenHeight: function() {
+      return canvas.height;
     },
     draw: function() {
       draw();

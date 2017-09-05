@@ -8,16 +8,37 @@ function Map() {
   let width = 0;
   let height = 0;
   let map = [];
+  let hexagon_model = undefined;
+  let canvas_padding = 0;
 
   return {
-    createEmptyMap: function(pWidth, pHeight) {
+    createEmptyMap: function(pWidth, pHeight, pHexagonModel,pCanvasPadding) {
+      hexagon_model = pHexagonModel;
       width = pWidth;
       height = pHeight;
-      while(map.push([]) < pHeight);
-      map = new Array(pHeight);
-      map.forEach(function(element) {
-        while(element.push([0]) < pWidth);
-      });
+      canvas_padding = pCanvasPadding;
+
+      let while_height = 0;
+      let while_width = 0;
+
+      let decalage = 0;
+
+      while(while_height < height) {
+        map.push([]);
+        if (while_height % 2 === 0) {
+          decalage = 0;
+        } else {
+          decalage = hexagon_model.getHorizontalDistance()/2;
+        }
+        while(while_width < width) {
+          let hex_center = Point(canvas_padding+while_width*hexagon_model.getHorizontalDistance()+decalage,canvas_padding+while_height*hexagon_model.getVerticalDistance());
+          map[while_height].push(Hexagon(hexagon_model.getSize(),hex_center));
+          while_width += 1;
+        }
+          while_height += 1;
+          while_width = 0;
+      }
+
       return map;
     },
     setCase: function(pLine, pColumn, pId) {
@@ -34,6 +55,24 @@ function Map() {
     },
     getHeight: function() {
       return height;
+    },
+    isOneNeighborSameOwner: function(pLine, pColumn) {
+      let neighbors = [
+        [Point(0,  1), Point( -1, 0), Point(-1, -1), Point(0,  -1), Point(1, -1), Point( 1, 0)],
+        [Point(0,  1), Point(-1, 1), Point( -1, 0), Point(0,  -1), Point( 1, 0), Point(1, 1)]];
+      let decalage = pLine % 2;
+
+
+        neighbors[decalage].forEach(function(neighbor) {
+          let neighbor_x = pLine+neighbor.getX();
+          let neighbor_y = pColumn+neighbor.getY();
+          if (neighbor_x >= 0 && neighbor_x < height && neighbor_y >= 0 && neighbor_y < width) {
+            if (map[neighbor_x][neighbor_y].getOwner() === map[pLine][pColumn].getOwner()) {
+              return true;
+            }
+          }
+        });
+        return false;
     }
   };
 }
