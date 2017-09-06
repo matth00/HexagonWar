@@ -221,16 +221,20 @@ function Battlefield(w, h) {
             battlefield[x][y].takeCell(idPlayer);
             neighboors.forEach(function (cell) {
                 battlefield[cell.x][cell.y].takeCell(idPlayer);
+                players[idPlayer].incrCellsOwned();
+
             });
             success();
         },
         buyCell: function (idPlayer, x, y, success, fail) {
-
-
-            if (players[idPlayer].getPoints() >= battlefield[x][y].getCost()) {
+            //if ()
+            if (players[idPlayer].getPoints() < battlefield[x][y].getCost()) {
+                fail(1);
+            }
                 players[idPlayer].decrPointsM(battlefield[x][y].getCost());
                 players[idPlayer].incrCellsOwned();
                 battlefield[x][y].takeCell(idPlayer);
+                success();
             }
         },
         releaseCell: function (x,y) {

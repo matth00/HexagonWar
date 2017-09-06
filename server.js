@@ -14,7 +14,7 @@ const port = 8080,
 
 
 const gameEngine = require("./gameEngine.js");
-let battlefield = gameEngine.Battlefield(10,10);
+let battlefield = gameEngine.Battlefield(50,50);
 // Chargement de socket.io
 
 
@@ -41,7 +41,7 @@ io.on('connection', function (socket) {
             function () {
                 log.info(playerName + ' joined the game on socket id: ' + socket.id);
                 socket.emit('PlayerJoin','Welcome');
-                socket.emit('NewBattlefield', JSON.stringify(battlefield));
+                io.sockets.emit('NewBattlefield', JSON.stringify(battlefield));
             },
             function (errorCode) {
 
@@ -59,8 +59,14 @@ io.on('connection', function (socket) {
     socket.on('BuyCell', function (JSONCell){
         let cell = JSON.parse(JSONCell);
         let idPlayer = battlefield.getIdPlayerFromSocket(socket.id);
-        battlefield.buyCell(idPlayer, cell.x, cell.y);
-        socket.emit('NewBattlefield', JSON.stringify(battlefield));
+        battlefield.buyCell(idPlayer, cell.x, cell.y,
+            function () {//success
+                log.info(battlefield.getPlayers()[idPlayer].getName() +' bought cell ('+ x+':'+ y')')
+                socket.emit('NewBattlefield', JSON.stringify(battlefield));
+            },
+            function (errorcode) {//failed
+
+            });
     });
 });
 
