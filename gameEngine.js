@@ -1,7 +1,7 @@
 "use strict";
 
 function Player(n, c, s) {
-    const DEFAULTPOINTS = 3000;
+    const DEFAULTPOINTS = 10;
     let name = n;
     let color = c;
     let nbCellsOwned = 1;
@@ -9,6 +9,7 @@ function Player(n, c, s) {
     let seedX = undefined;
     let seedY = undefined;
     let socket = s;
+
 
     return{
         getName: function () {
@@ -27,10 +28,10 @@ function Player(n, c, s) {
             return nbCellsOwned;
         },
         incrCellsOwned: function () {
-            nbCellsOwned++;
+            nbCellsOwned+=1;
         },
         decrCellsOwned: function () {
-            nbCellsOwned--;
+            nbCellsOwned-=1;
         },
         getPoints: function () {
             return points;
@@ -38,7 +39,7 @@ function Player(n, c, s) {
         incrPointsN: function (n) {
             points+=n;
         },
-        decrPointsM: function (n) {
+        decrPointsN: function (n) {
             points-=n;
         },
         setSeed: function(x,y){
@@ -50,7 +51,7 @@ function Player(n, c, s) {
             let y = seedY;
             return{
                 x, y
-            }
+            };
         },
         getIdSocket: function(){
             return socket;
@@ -59,20 +60,23 @@ function Player(n, c, s) {
             socket = idSocket;
         },
         toJSON: function(){
-            return {name,color,nbCellsOwned, points};
+            let pts = Math.floor(points);
+            return {name,color,nbCellsOwned,points:pts};
         }
-    }
+    };
 }
 
 function Cell(c) {
     let idOwner = undefined;
     let cost = c;
+    const PRICEFREECELL = 3;
+    const PRICEOWNEDCELL = 10;
     return{
         setIdOwner: function (id) {
             idOwner = id;
         },
         getIdOwner: function () {
-            return owner;
+            return idOwner;
         },
         setCost: function (c) {
             cost = c;
@@ -81,50 +85,46 @@ function Cell(c) {
             return cost;
         },
         isOwned(){
-            return owner !== undefined;
+            return idOwner !== undefined;
         },
         takeCell: function (idPlayer) {
-            const PRICEOWNEDCELL = 10;
-
             idOwner = idPlayer;
             cost = PRICEOWNEDCELL;
         },
         releaseCell: function () {
-            const PRICEFREECELL = 3;
-
             idOwner = undefined;
             cost = PRICEFREECELL;
         },
         toJSON: function(){
             return {idOwner,cost};
         }
-    }
+    };
 }
 
 function Battlefield(w, h) {
-    const width = w,
-        height = h,
-        DEFAULTCELLCOST = 3;
+    const width = w;
+    const height = h;
+    const DEFAULTCELLCOST = 3;
+    const POINTSINCREMENTS = 0.2;
     let players = [];
     let battlefield = [];
     const colors = [
-        {used: false, value: '#0772a1'},
-        {used: false, value: '#ff3100'},
-        {used: false, value: '#ff8700'},
-        {used: false, value: '#00b741'},
-        {used: false, value: '#9702a7'},
-        {used: false, value: '#01939a'},
-        {used: false, value: '#cd0074'}
+        {used: false, value: "#0772a1"},
+        {used: false, value: "#ff3100"},
+        {used: false, value: "#ff8700"},
+        {used: false, value: "#00b741"},
+        {used: false, value: "#9702a7"},
+        {used: false, value: "#01939a"},
+        {used: false, value: "#cd0074"}
     ];
     const MAXNBPLAYERS = colors.length;
-    init();
 
     function selectColor(){
         let color = undefined;
         colors.some(function (c) {
             color = c;
             return !color.used;
-        })
+        });
         color.used = true;
         return color.value;
     }
@@ -144,9 +144,17 @@ function Battlefield(w, h) {
 
     }
 
+    init();
+
     function addPlayer(name,color, idSocket) {
         let p = Player(name, color, idSocket);
-        return players.push(p) - 1;
+        // let i=0;
+        // while (players[i] !== undefined){
+        //     i+=1;
+        // }
+        // players[i] = p;
+        //return i;
+        return players.push(p)-1;
     }
 
     function getNeighboors(x, y) {
@@ -157,7 +165,7 @@ function Battlefield(w, h) {
         let newNeighboors = [];
 
         neighboors[shift].forEach(function(neighboor) {
-            neighboor.x = x+neighboor.x
+            neighboor.x = x+neighboor.x;
             neighboor.y = y+neighboor.y;
             if (neighboor.x >= 0 && neighboor.x < height && neighboor.y >= 0 && neighboor.y < width) {
                 newNeighboors.push(neighboor);
@@ -170,19 +178,27 @@ function Battlefield(w, h) {
         if (players.length === 0){
             return true;
         }
-        let p = undefined;
-        players.some(function (player) {
-            p = player;
-            return player.getName() === name;
+        let flag = true;
+        players.forEach(function (player) {
+            if (player !== undefined) {
+                if (player.getName() === name) {
+                    flag = false;
+                }
+            }
         });
-        return !(p.getName() === name);
+        console.log(name+" is free: " +flag);
+        return flag;
     }
 
     function canPlayerBuyCell(idPlayer, x,y) {
         let idOwner = undefined;
-        getNeighboors(x,y).some(function (cell) {
-            idOwner = cell.getIdOwner();
-            return idPlayer === cell.getIdOwner();
+        let neighboors = getNeighboors(x,y);
+        neighboors.some(function (cell) {
+            if (cell === undefined){
+                return false;
+            }
+            idOwner = battlefield[cell.x][cell.y].getIdOwner();
+            return idPlayer === battlefield[cell.x][cell.y].getIdOwner();
         });
         return idOwner === idPlayer;
     }
@@ -194,6 +210,9 @@ function Battlefield(w, h) {
         getIdPlayerFromSocket: function (idSocket) {
             let id = undefined;
             players.some(function (player, index) {
+                if (player === undefined){
+                    return false;
+                }
                 id = index;
                 return player.getIdSocket() === idSocket;
             });
@@ -227,23 +246,39 @@ function Battlefield(w, h) {
             success();
         },
         buyCell: function (idPlayer, x, y, success, fail) {
-            //if ()
             if (players[idPlayer].getPoints() < battlefield[x][y].getCost()) {
                 fail(1);
+                return undefined;
             }
-                players[idPlayer].decrPointsM(battlefield[x][y].getCost());
-                players[idPlayer].incrCellsOwned();
-                battlefield[x][y].takeCell(idPlayer);
-                success();
+            if (!canPlayerBuyCell(idPlayer,x,y)){
+                fail(2);
+                return undefined;
             }
+            players[idPlayer].decrPointsN(battlefield[x][y].getCost());
+            players[idPlayer].incrCellsOwned();
+            battlefield[x][y].takeCell(idPlayer);
+            success();
         },
-        releaseCell: function (x,y) {
-            battlefield[x][y].setOwner(undefined);
+        creditPlayers: function () {
+            players.forEach(function (player, index) {
+                player.incrPointsN(player.getNbCellsOwned() * POINTSINCREMENTS);
+            });
+        },
+        playerQuit: function (idPlayer) {
+            battlefield.forEach(function (cells){
+                cells.forEach(function(cell){
+                    if (cell.getIdOwner() === idPlayer){
+                        cell.releaseCell();
+                    }
+                });
+            });
+            players[idPlayer] = undefined;
+            console.log(JSON.stringify(players));
         },
         toJSON: function(){
             return {players,battlefield};
         }
-    }
+    };
 }
 
 exports.Battlefield = (width, height) => Battlefield(width, height);
