@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hexagon War</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="files/style/logo.png">
+    <link rel="stylesheet" type="text/css" href="files/style/style.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script type="text/javascript" src="files/scripts/game.point.js"></script>
+    <script type="text/javascript" src="files/scripts/game.hexagon.js"></script>
+    <script type="text/javascript" src="files/scripts/game.display.js"></script>
+    <script type="text/javascript" src="files/scripts/game.map.js"></script>
+    <script type="text/javascript" src="files/scripts/game.input.js"></script>
+    <script type="text/javascript" src="files/scripts/game.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+  </head>
+  <body>
+    <!-- Canvas -->
+  <div id="display">
+    <canvas id="playground" width="100" height="100">Error. The canvas is not supported.</canvas>
+    <canvas id="score">Error. The canvas is not supported.</canvas>
+  </div>
+  <div id="settings">
+    <div class="container">
+      <div class="row main">
+        <div class="panel-heading">
+          <div class="panel-title text-center">
+            <h1 class="title">Hexagon War</h1>
+          </div>
+        </div>
+        <div id="messages"></div>
+      <div class="main-center form-horizontal">
+
+          <div class="form-group">
+            <label for="name" class="cols-sm-2 control-label">Name</label>
+            <div class="cols-sm-10">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user fa"></i></span>
+                <input type="text" class="form-control" maxlength="8" name="name" id="name"  placeholder="Name"/>
+              </div>
+            </div>
+          </div>
+          <div class="form-group ">
+            <button type="button" id="play" class="btn btn-primary btn-lg btn-block login-button">Play</button>
+          </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </body>
+</html>
