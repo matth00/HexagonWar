@@ -89,7 +89,7 @@ io.on("connection", function (socket) {
 setInterval(function () {
     battlefield.creditPlayers();
     io.sockets.emit("PointsUpdate", JSON.stringify(battlefield.getPlayers()));
-    // log.info("points updated");
+    log.info("points updated");
 }, TIMERINTERVAL*1000);
 
 

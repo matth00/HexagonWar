@@ -160,7 +160,6 @@ function Battlefield(w, h) {
         players[i] = p;
         nbPlayers+=1;
         return i;
-        // return players.push(p)-1;
     }
 
     function removePlayer(idPlayer) {
