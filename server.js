@@ -33,11 +33,24 @@ app.use(express.static(path.join(__dirname, "/public")))
     });
 
 io.on("connection", function (socket) {
-    log.info("new user connected with");
+    log.info("new user connected with socket id " + socket.id);
+    socket.on("disconnect", function () {
+        let idPlayer = battlefield.getIdPlayerFromSocket(socket.id);
+        log.debug(idPlayer);
+        if (idPlayer !== undefined){
+            log.debug(battlefield.getPlayers()[idPlayer].getName()+" disconnected");
+            let playerName = battlefield.getPlayers()[idPlayer].getName();
+            battlefield.playerQuit(idPlayer);
+            console.log("nouvel etat du tableau des joueurs");
+            console.log(JSON.stringify(battlefield.getPlayers()));
+            log.info(playerName+" left the game");
+        }
+    });
     socket.on("NewPlayer", function (playerName) {
         battlefield.newPlayer(playerName, socket.id,
             function () {
                 socket.emit("PlayerJoin","Welcome");
+                log.info(JSON.stringify(battlefield.getPlayers()));
                 io.sockets.emit("NewBattlefield", JSON.stringify(battlefield));
                 log.info(playerName + " joined the game on socket id: " + socket.id);
             },
@@ -55,6 +68,7 @@ io.on("connection", function (socket) {
             });
     });
     socket.on("BuyCell", function (JSONCell){
+        log.debug("BuyCell: event received");
         let cell = JSON.parse(JSONCell);
         let idPlayer = battlefield.getIdPlayerFromSocket(socket.id);
         if (idPlayer === undefined){
@@ -81,7 +95,7 @@ io.on("connection", function (socket) {
 setInterval(function () {
     battlefield.creditPlayers();
     io.sockets.emit("PointsUpdate", JSON.stringify(battlefield.getPlayers()));
-    log.info("points updated");
+    // log.info("points updated");
 }, TIMERINTERVAL*1000);
 
 

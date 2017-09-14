@@ -108,6 +108,7 @@ function Battlefield(w, h) {
     const POINTSINCREMENTS = 0.2;
     let players = [];
     let battlefield = [];
+    let nbPlayers = 0;
     const colors = [
         {used: false, value: "#0772a1"},
         {used: false, value: "#ff3100"},
@@ -141,20 +142,31 @@ function Battlefield(w, h) {
             j=0;
             i=i+1;
         }
-
+        i=0;
+        while (i<MAXNBPLAYERS){
+            players[i] = null;
+            i+=1;
+        }
     }
 
     init();
 
     function addPlayer(name,color, idSocket) {
         let p = Player(name, color, idSocket);
-        // let i=0;
-        // while (players[i] !== undefined){
-        //     i+=1;
-        // }
-        // players[i] = p;
-        //return i;
-        return players.push(p)-1;
+        let i=0;
+        while (players[i] !== null){
+            console.log(i);
+            i+=1;
+        }
+        players[i] = p;
+        nbPlayers+=1;
+        return i;
+        // return players.push(p)-1;
+    }
+
+    function removePlayer(idPlayer) {
+        players[idPlayer] = null;
+        nbPlayers-=1;
     }
 
     function getNeighboors(x, y) {
@@ -175,24 +187,26 @@ function Battlefield(w, h) {
     }
 
     function isPlayerNameFree(name){
-        if (players.length === 0){
+        if (nbPlayers === 0){
             return true;
         }
         let flag = true;
         players.forEach(function (player) {
-            if (player !== undefined) {
+            if (player !== null) {
                 if (player.getName() === name) {
                     flag = false;
                 }
             }
         });
-        console.log(name+" is free: " +flag);
         return flag;
     }
 
     function canPlayerBuyCell(idPlayer, x,y) {
         let idOwner = undefined;
         let neighboors = getNeighboors(x,y);
+        if (battlefield[x][y].getIdOwner() === idPlayer){
+            return false;
+        }
         neighboors.some(function (cell) {
             if (cell === undefined){
                 return false;
@@ -210,7 +224,8 @@ function Battlefield(w, h) {
         getIdPlayerFromSocket: function (idSocket) {
             let id = undefined;
             players.some(function (player, index) {
-                if (player === undefined){
+                if (player === null){
+                    id = undefined;
                     return false;
                 }
                 id = index;
@@ -223,7 +238,7 @@ function Battlefield(w, h) {
         },
         initialize: init,
         newPlayer: function (name, socketId, success, fail) {
-            if (players.length === MAXNBPLAYERS){
+            if (nbPlayers === MAXNBPLAYERS){
                 fail(1);
                 return undefined;
             }
@@ -261,7 +276,9 @@ function Battlefield(w, h) {
         },
         creditPlayers: function () {
             players.forEach(function (player, index) {
-                player.incrPointsN(player.getNbCellsOwned() * POINTSINCREMENTS);
+                if (player !== null){
+                    player.incrPointsN(player.getNbCellsOwned() * POINTSINCREMENTS);
+                }
             });
         },
         playerQuit: function (idPlayer) {
@@ -272,8 +289,7 @@ function Battlefield(w, h) {
                     }
                 });
             });
-            players[idPlayer] = undefined;
-            console.log(JSON.stringify(players));
+            removePlayer(idPlayer);
         },
         toJSON: function(){
             return {players,battlefield};

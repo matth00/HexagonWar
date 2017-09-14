@@ -6,7 +6,7 @@
 
 function Game() {
   // Settings
-  let setting_server_ip = "172.20.1.22:8080";
+  let setting_server_ip = "127.0.0.1:8080";
   let setting_hexagon_size = 30;
   let setting_map_width = 50;
   let setting_map_height = 50;
