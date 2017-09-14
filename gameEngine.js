@@ -155,7 +155,6 @@ function Battlefield(w, h) {
         let p = Player(name, color, idSocket);
         let i=0;
         while (players[i] !== null){
-            console.log(i);
             i+=1;
         }
         players[i] = p;

@@ -36,13 +36,9 @@ io.on("connection", function (socket) {
     log.info("new user connected with socket id " + socket.id);
     socket.on("disconnect", function () {
         let idPlayer = battlefield.getIdPlayerFromSocket(socket.id);
-        log.debug(idPlayer);
         if (idPlayer !== undefined){
-            log.debug(battlefield.getPlayers()[idPlayer].getName()+" disconnected");
             let playerName = battlefield.getPlayers()[idPlayer].getName();
             battlefield.playerQuit(idPlayer);
-            console.log("nouvel etat du tableau des joueurs");
-            console.log(JSON.stringify(battlefield.getPlayers()));
             log.info(playerName+" left the game");
         }
     });
@@ -50,14 +46,13 @@ io.on("connection", function (socket) {
         battlefield.newPlayer(playerName, socket.id,
             function () {
                 socket.emit("PlayerJoin","Welcome");
-                log.info(JSON.stringify(battlefield.getPlayers()));
                 io.sockets.emit("NewBattlefield", JSON.stringify(battlefield));
                 log.info(playerName + " joined the game on socket id: " + socket.id);
             },
             function (errorCode) {
 
                 if (errorCode === 1){
-                    log.info(playerName+ " already used");
+                    log.info(playerName+ " tried to join the game but the room is full");
                     socket.emit("PlayerJoin","ServerFull");
                 }
                 if (errorCode === 2){
@@ -68,7 +63,6 @@ io.on("connection", function (socket) {
             });
     });
     socket.on("BuyCell", function (JSONCell){
-        log.debug("BuyCell: event received");
         let cell = JSON.parse(JSONCell);
         let idPlayer = battlefield.getIdPlayerFromSocket(socket.id);
         if (idPlayer === undefined){
